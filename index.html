@@ -259,8 +259,74 @@
 				text-align: center;
 				line-height: 100vh;
 				vertical-align: middle;
-				background: linear-gradient(0deg, transparent 30%, #111 30%, #111 35%, transparent 35%, transparent 40%, #111 40%, #111 60%, transparent 60%, transparent 65%, #111 65%, #111 70%, transparent 70%);
+				background: linear-gradient(0deg, black 30%, #111 30%, #111 35%, black 35%, black 40%, #111 40%, #111 60%, black 60%, black 65%, #111 65%, #111 70%, black 70%);
 				transition: bottom .3s;
+			}
+			#scores{
+				position: fixed;
+				top: -100vh;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: #111;
+				transition: top .3s;
+			}
+			@keyframes slide{
+				from{ width: 0; }
+				to{ width: 100%; }
+			}
+			#bar{
+				animation: slide 3s linear .3s forwards;
+				position: absolute;
+				bottom: 0;
+				height: 5vmin;
+				background: white;
+			}
+			#loader{
+				position: absolute;
+				bottom: 0;
+				height: 5vmin;
+				width: 100%;
+				background: black;
+			}
+			#sccont{
+				position: absolute;
+				top: 50vh;
+				left: 50vw;
+				width: 80vw;
+				transform: translate(-50%, -50%);
+				text-align: center;
+			}
+			.scorecard{
+				display: inline-block;
+				width: 20vmin;
+				height: 20vmin;
+				color: white;
+				font-size: 8vmin;
+				margin: 3vmin;
+			/* 	line-height: 50%; */
+			}
+			.scorename{
+				font-family: DotGothic16;
+				font-size: 8vmin;
+			}
+			@keyframes count{
+				0%{transform: scale(2); opacity: 0;}
+				50%{opacity: 1}
+				75%{transform: scale(1);}
+				100%{transform: scale(1); opacity: 0;}
+			}
+			.countdown{
+				position: fixed;
+				height: 100%;
+				width: 100%;
+				left: 0;
+				top: 0;
+				text-align: center;
+				font-size: 20vmin;
+				line-height: 100vh;
+				animation: count 1s forwards;
+				color: white;
 			}
 		</style>
 	</head>
@@ -295,7 +361,15 @@
 			<div id="start" onclick="startGame()">Start Game!</div>
 		</div>
 		
-		<div id="winner"><span id="wname">AAA</span> WON THE GAME!</div>
+		<div id="winner"><span id="wname">AAA</span> WON THE ROUND!</div>
+		<div id="scores">
+			<div id="sccont">
+		<!-- 		<div class="scorecard"><p class="scorename">AAA</p>69</div> -->
+			</div>
+			<div id="loader">
+				<div id="bar"></div>
+			</div>
+		</div>
 		<script src="script.js"></script>
 	</body>
 </html>
