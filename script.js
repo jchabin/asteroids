@@ -747,7 +747,7 @@ function startGame(){
 		
 		// ctx.clearRect(0, 0, width, height)
 		ctx.fillStyle = "black";
-		// ctx.globalAlpha = 0.05;
+		ctx.globalAlpha = 0.5;
 		ctx.fillRect(0, 0, width, height);
 		ctx.globalAlpha = 1;
 		
