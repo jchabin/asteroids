@@ -227,6 +227,7 @@ html, body {
 	--outline: white;
 	font-family: DotGothic16;
 	color: black;
+	font-weight: normal;
 	text-shadow:
 		.5vmin .5vmin var(--outline),
 		.5vmin -.5vmin var(--outline),
@@ -248,8 +249,9 @@ html, body {
 	text-align: center;
 	line-height: 100vh;
 	vertical-align: middle;
-	background: linear-gradient(0deg, black 30%, #111 30%, #111 35%, black 35%, black 40%, #111 40%, #111 60%, black 60%, black 65%, #111 65%, #111 70%, black 70%);
+	background: linear-gradient(5deg, black 30%, #111 30%, #111 35%, black 35%, black 40%, #111 40%, #111 60%, black 60%, black 65%, #111 65%, #111 70%, black 70%);
 	transition: bottom .3s;
+	font-weight: bold;
 }
 #scores{
 	position: fixed;
@@ -316,4 +318,161 @@ html, body {
 	line-height: 100vh;
 	animation: count 1s forwards;
 	color: white;
+}
+#settings{
+	position: absolute;
+	bottom: 3vmin;
+	left: 3vmin;
+	font-size: 3vmin;
+}
+.smallinp{
+	font-size: 3vmin;
+	width: 5vmin;
+	outline: none;
+	border: none;
+	background: #111;
+	text-align: center;
+	color: white;
+	border-radius: .3vmin;
+	transition: color .3s;
+}
+
+.smallinp:disabled{
+	color: #444;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.srow{
+	background: #080808;
+	padding: .6vmin;
+	padding-left: 7vmin;
+	text-align: left;
+	height: 4.8vmin;
+	box-sizing: border-box;
+	padding-right: 2.5vmin;
+}
+
+#dropdown.open > * > .srow ~ .srow{
+	border-top: 1px solid #111;
+}
+
+#dropdown.open > * > .srow:hover{
+	background: #040404;
+}
+
+#dropdown.open > * > .srow > .smallinp{
+	cursor: pointer;
+}
+
+#dropdown{
+	display: inline-block;
+	cursor: pointer;
+	overflow: hidden;
+	position: absolute;
+	bottom: 3vmin;
+	left: 3vmin;
+	background: black;
+	height: 4.8vmin;
+	font-size: 3vmin;
+	transition: height .3s;
+	border-radius: .6vmin;
+/* 	border: 1px solid #222; */
+}
+
+#dropdown.open{
+	height: calc(4.8vmin * 6);
+}
+
+#dropdown::before{
+	content: "\02C4";
+	border-right: 1px solid #111;
+	background: #080808;
+	padding: .6vmin;
+	text-align: center;
+	width: 3.5vmin;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-weight: bold;
+}
+
+#dropdown.open::before{
+	content: "\02C5";
+}
+
+#doffset{
+	transition: margin .3s;
+}
+
+#dlabel{
+	font-size: 3vmin;
+	position: absolute;
+	left: 3.6vmin;
+	bottom: 9vmin;
+}
+
+.darker{
+	color: #444;
+}
+#winscreen{
+	position: fixed;
+	top: -100vh;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+/* 	background: hsl(140, 100%, 50%); */
+	color: black;
+	font-size: 10vmin;
+	text-align: center;
+	line-height: 100vh;
+	font-weight: bold;
+	transition: top .3s;
+}
+
+#wwname{
+	--outline: black;
+	font-family: DotGothic16;
+	font-weight: normal;
+/* 	color: hsl(140, 100%, 50%); */
+	text-shadow:
+		.5vmin .5vmin var(--outline),
+		.5vmin -.5vmin var(--outline),
+		-.5vmin .5vmin var(--outline),
+		-.5vmin -.5vmin var(--outline),
+		0vmin .5vmin var(--outline),
+		0vmin -.5vmin var(--outline),
+		.5vmin 0vmin var(--outline),
+		-.5vmin 0vmin var(--outline);
+}
+
+#newgame{
+	display: inline-block;
+	text-align: center;
+	background: white;
+	border: 0.75vmin solid black;
+	color: black;
+	font-size: 5vmin;
+	width: 40vmin;
+	cursor: pointer;
+	position: absolute;
+	bottom: 8vmin;
+	right: 8vmin;
+/* 	transition: transform .3s; */
+	line-height: 100%;
+	mix-blend-mode: multiply;
+}
+#newgame:hover{
+	background: black;
+	color: white;
+/* 	transform: scale(1.2); */
 }
