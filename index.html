@@ -15,11 +15,11 @@
 		<div class="menu" id="mobile">
 			<div class="page _1">
 				<div class="mheader">Enter the 4-letter code from the computer to join the game.</div>
-				<input id="codeinp" oninput="joinCode(this)" autocomplete="off"></input>
+				<input id="codeinp" oninput="joinCode(this)" autocomplete="off">
 			</div>
 			<div class="page _2">
 				<div class="mheader">Choose your name.</div>
-				<input id="nameinp" oninput="setName(this)" placeholder="---" autocomplete="off"></input>
+				<input id="nameinp" oninput="setName(this)" placeholder="---" autocomplete="off">
 				<div class="gbutton" onclick="submitName()">Submit</div>
 			</div>
 			<div class="page _3">
@@ -39,12 +39,26 @@
 				
 			</div>
 			<div id="start" onclick="startGame()">Start Game!</div>
+			<div id="dlabel">Game win condition:</div>
+			<div id="dropdown">
+				<div id="doffset">
+					<div class="srow">First to win <input class="smallinp" placeholder="10" value="10" min="1" oninput="changeModeVal(this)"> rounds <span class="darker">(default)</span></div>
+					<div class="srow">First to kill <input class="smallinp" placeholder="10" value="10" min="3" oninput="changeModeVal(this)"> other players</div>
+					<div class="srow">Battle Royale with <input class="smallinp" placeholder="3" value="3" min="3" oninput="changeModeVal(this)"> hitpoints</div>
+					<div class="srow">First team to win <input class="smallinp" placeholder="10" value="10" min="1" oninput="changeModeVal(this)"> rounds</div>
+					<div class="srow">First team to kill <input class="smallinp" placeholder="10" value="10" min="3" oninput="changeModeVal(this)"> enemies</div>
+					<div class="srow">Team deathmatch with <input class="smallinp" placeholder="3" value="3" min="3" oninput="changeModeVal(this)"> hitpoints</div>
+				</div>
+			</div>
 		</div>
 		
 		<div id="winner"><span id="wname">AAA</span> WON THE ROUND!</div>
+		<div id="winscreen"><span id="wwname">AAA</span> WON THE GAME!
+			<div id="newgame" onclick="location.reload()">New Game</div>
+		</div>
+		
 		<div id="scores">
 			<div id="sccont">
-		<!-- 		<div class="scorecard"><p class="scorename">AAA</p>69</div> -->
 			</div>
 			<div id="loader">
 				<div id="bar"></div>
