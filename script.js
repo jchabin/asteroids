@@ -14,7 +14,7 @@ firebase.analytics();
 
 var database = firebase.database();
 
-var startCooldown = 750, cooldown = 300;
+var startCooldown = 750, cooldown = 300, tempI = 1250, blinkSpeed = 12;
 var code, me, ref, players = {}, status, numPlayers = 0, c = document.getElementById("c"), SPEED = 0.2, BSPEED = 10, bullets = [], asteroids = [], particles = [], replay = [], replaySpeed, camera, explosions = [];
 
 var debugpoints = [];
@@ -55,6 +55,7 @@ class asteroid{
 		this.color = "white";
 		this.push = true;
 		this.n = [];
+		this.hits = [];
 	}
 	
 	pX(n){
@@ -67,6 +68,8 @@ class asteroid{
 	
 	draw(ctx){
 		ctx.strokeStyle = this.color;
+		// if(Math.hypot(this.x - window.innerWidth / 2, this.y - window.innerHeight / 2) < window.innerWidth / 4 + this.rad)
+		// 	ctx.strokeStyle = "red";
 		ctx.beginPath();
 		ctx.moveTo(this.pX(this.points.length - 1), this.pY(this.points.length - 1));
 		for(var i = 0; i < this.points.length; i++)
@@ -167,7 +170,7 @@ class asteroid{
 	
 	move(ast, ctx, n){
 		var hit = false;
-		// this.color = "white";
+		this.hits = [];
 		for(var i = n + 1; i < ast.length; i++)
 			if(ast[i] != this){
 				var a = ast[i];
@@ -225,6 +228,9 @@ class asteroid{
 						
 						continue;
 					}
+					
+					this.hits.push(a);
+					
 					// debugger;
 					var n = [norm[0] * d, norm[1] * d];
 					var f = [
@@ -515,7 +521,7 @@ function fakePlayer(){
 function nextGame(){
 	var winplayer;
 	for(var i in players)
-		if(players[i].score >= modeVal && (!winplayer || players[winplayer].score < players[i].score))
+		if((players[i].score >= modeVal || (players[i].score > 0 && selectedMode == 2)) && (!winplayer || players[winplayer].score < players[i].score))
 			winplayer = i;
 	
 	if(winplayer){
@@ -573,8 +579,8 @@ function startGame(){
 	
 	var ctx = c.getContext("2d");
 	
-	for(var i = 0; i < 20; i++){
-		var a = new asteroid(
+	for(var i = 0; i < 14; i++){
+		var ass = new asteroid(
 			Math.pow(Math.random(), 2) * 100 + 10,
 			(Math.random() * 2 - 0.5) * width,
 			(Math.random() * 2 - 0.5) * height,
@@ -583,10 +589,10 @@ function startGame(){
 			(Math.random() - 0.5) * 3,
 			(Math.random() - 0.5) * 0.04
 		);
-		if(a.colliding(asteroids) || Math.hypot(a.x - width / 2, a.y - height / 2) < width / 2 + a.r)
+		if(Math.hypot(ass.x - width / 2, ass.y - height / 2) < height / 4 + ass.rad || ass.colliding(asteroids))
 			i--;
 		else
-			asteroids.push(a);
+			asteroids.push(ass);
 	}
 	
 	var collider = new asteroid(20, 0, 0, 0, 0, 0, 0);
@@ -608,6 +614,8 @@ function startGame(){
 		p.pos.xv = 0;
 		p.pos.yv = 0;
 		p.dead = false;
+		if(selectedMode == 2)
+			p.lives = modeVal;
 		if(!p.score)
 			p.score = 0;
 	}
@@ -657,6 +665,9 @@ function startGame(){
 			players[i].cooldown = Date.now() + startCooldown;
 	}, 1800);
 	
+	var mScore = 0;
+	
+	var frameNum = 0;
 	function update(){
 		if(freezeFrame > 0){
 			requestAnimationFrame(update);
@@ -671,7 +682,7 @@ function startGame(){
 			ctx.globalCompositeOperation = "source-over";
 			return;
 		}
-		if(alivePlayers > 1 || deathFrames-- > 0)
+		if((alivePlayers > 1 && (selectedMode != 1 || mScore < modeVal)) || deathFrames-- > 0)
 			requestAnimationFrame(update);
 		else{
 			setTimeout(function(){
@@ -681,10 +692,18 @@ function startGame(){
 		}
 		if(deathFrames == 31){
 			var winner;
-			for(var i in players)
-				if(!players[i].dead)
-					winner = players[i];
-			winner.score++;
+			if(selectedMode == 1 && alivePlayers > 1){
+				for(var i in players)
+					if(!players[i].score >= mScore)
+						winner = players[i];
+			}else
+				for(var i in players)
+					if(!players[i].dead)
+						winner = players[i];
+			if(!winner)
+				debugger;
+			if(selectedMode == 0 || selectedMode == 2)
+				winner.score++;
 			document.getElementById("wname").style.setProperty("--outline", "hsl(" + winner.data.color + ", 100%, 50%)");
 			document.getElementById("wname").innerHTML = winner.data.name;
 			document.getElementById("winner").style.bottom = 0;
@@ -703,8 +722,16 @@ function startGame(){
 		// ctx.globalAlpha = 0.05;
 		ctx.fillRect(0, 0, width, height);
 		ctx.globalAlpha = 1;
+		
+		// ctx.fillStyle = "#111";
+		// ctx.beginPath();
+		// ctx.arc(width / 2, height / 2, width / 2, 0, Math.PI * 2);
+		// ctx.fill();
+		
 		for(var i in players){
 			p = players[i];
+			mScore = Math.max(mScore, p.score);
+			
 			if(p.dead)
 				continue;
 			if(!p.data.mov)
@@ -721,8 +748,10 @@ function startGame(){
 			var p2 = rotPoint(-5, 5, p.pos.r);
 			var p3 = rotPoint(-5, -5, p.pos.r);
 			
+			var invc = p.invc && (p.invc > Date.now());
+			
 			ctx.lineWidth = 3;
-			ctx.strokeStyle = "hsl(" + p.data.color + ", 100%, 50%)";
+			ctx.strokeStyle = (invc && frameNum % blinkSpeed < blinkSpeed / 2) ? "white" : ("hsl(" + p.data.color + ", 100%, 50%)");
 			ctx.beginPath();
 			ctx.moveTo(p.pos.x + p1[0], p.pos.y + p1[1]);
 			ctx.lineTo(p.pos.x + p2[0], p.pos.y + p2[1]);
@@ -770,6 +799,11 @@ function startGame(){
 			if(collider.move(asteroids, ctx, -1)){
 				var dir = Math.atan2(collider.yv, collider.xv);
 				var len = Math.hypot(collider.yv, collider.xv);
+				
+				p.pos.xv = collider.xv, p.pos.yv = collider.yv;
+				if(invc)
+					continue;
+				
 				for(var n = 0; n < 35; n++){
 					particles.push(new particle(
 						p.pos.x,
@@ -782,10 +816,25 @@ function startGame(){
 					));
 				}
 				
+				
+				
+				for(var n = 0; n < collider.hits.length; n++)
+					collider.hits[n].blame = i;
+				
 				freezeFrame = 1;
-				// explosions.push({x: p.pos.x, y: p.pos.y});
+				
+				
+				if(selectedMode == 2 && p.lives-- > 0){
+					p.invc = Date.now() + tempI;
+					continue;
+				}
+				
 				p.dead = true;
 				alivePlayers--;
+				
+				if(selectedMode == 1 && collider.hits && collider.hits[0].blame && collider.hits[0].blame != i)
+					players[collider.hits[0].blame].score++;
+				
 				continue;
 			}
 			
@@ -793,6 +842,11 @@ function startGame(){
 				if(bullets[n].s != i && (typeof bullets[n].x != "undefined") && Math.hypot(bullets[n].x - p.pos.x, bullets[n].y - p.pos.y) < 12){
 					var dir = bullets[n].r;
 					var len = BSPEED;
+					
+					p.pos.xv += Math.cos(dir) * BSPEED; p.pos.yv += Math.sin(dir) * BSPEED;
+					if(invc)
+						continue;
+					
 					for(var j = 0; j < 35 + 15; j++){
 						particles.push(new particle(
 							p.pos.x,
@@ -806,9 +860,18 @@ function startGame(){
 					}
 					
 					freezeFrame = 1;
-					// explosions.push({x: p.pos.x, y: p.pos.y});
+					
+					if(selectedMode == 2 && p.lives-- > 0){
+						p.invc = Date.now() + tempI;
+						continue;
+					}
+					
 					p.dead = true;
 					alivePlayers--;
+					
+					if(selectedMode == 1)
+						players[bullets[n].s].score++;
+					
 					bullets.splice(n, 1);
 					continue;
 				}
@@ -822,7 +885,7 @@ function startGame(){
 			}
 			b = bullets[i];
 			if(typeof b.x == "undefined"){
-				if(Date.now() - players[b.s].cooldown < 0){
+				if(Date.now() < players[b.s].cooldown || players[b.s].dead){
 					bullets.splice(i--, 1);
 					continue;
 				}
@@ -869,13 +932,13 @@ function startGame(){
 				a.move(asteroids, ctx, i);
 			a.draw(ctx);
 			if(a.x < -2 * a.rad)
-				a.x += width + 4 * a.rad;
+				a.x = width + 2 * a.rad;
 			if(a.y < -2 * a.rad)
-				a.y += height + 4 * a.rad;
+				a.y = height + 2 * a.rad;
 			if(a.x > width + 2 * a.rad)
-				a.x -= width + 4 * a.rad;
+				a.x = -2 * a.rad;
 			if(a.y > height + 2 * a.rad)
-				a.y -= height + 4 * a.rad;
+				a.y = -2 * a.rad;
 		}
 		
 		for(var i = 0; i < particles.length; i++){
@@ -918,6 +981,8 @@ function startGame(){
 			if(replay.length > 16 * 6)
 				replay.splice(0, 1);
 		}
+		
+		frameNum++;
 	}
 	update();
 	
@@ -974,8 +1039,10 @@ function startGame(){
 			var p2 = rotPoint(-5, 5, p.pos.r);
 			var p3 = rotPoint(-5, -5, p.pos.r);
 			
+			var invc = p.invc && (p.invc > Date.now());
+			
 			ctx.lineWidth = 3;
-			ctx.strokeStyle = "hsl(" + p.data.color + ", 100%, 50%)";
+			ctx.strokeStyle = (invc && (frame / replaySpeed) % blinkSpeed < blinkSpeed / 2) ? "white" : ("hsl(" + p.data.color + ", 100%, 50%)");
 			ctx.beginPath();
 			ctx.moveTo(p.pos.x + p1[0], p.pos.y + p1[1]);
 			ctx.lineTo(p.pos.x + p2[0], p.pos.y + p2[1]);
@@ -1301,7 +1368,6 @@ document.getElementById("dropdown").onclick = function(e){
 			c[i].children[0].disabled = true;
 		}
 	}else{
-		console.log(e.target);
 		this.className = "";
 		var t = (e.target.className == "smallinp" || e.target.className == "darker") ? e.target.parentNode : e.target;
 		var s = Array.prototype.indexOf.call(this.children[0].children, t);
