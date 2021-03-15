@@ -14,6 +14,7 @@ firebase.analytics();
 
 var database = firebase.database();
 
+var startCooldown = 750, cooldown = 300;
 var code, me, ref, players = {}, status, numPlayers = 0, c = document.getElementById("c"), SPEED = 0.2, BSPEED = 10, bullets = [], asteroids = [], particles = [], replay = [], replaySpeed, camera, explosions = [];
 
 var debugpoints = [];
@@ -501,7 +502,31 @@ function rotPoint(x, y, r){
 	];
 }
 
+function fakePlayer(){
+	var p = {
+		status: 0,
+		mov: {x: 0, y: 0},
+		color: Math.floor(Math.random() * 360),
+		name: "AAA"
+	}
+	database.ref(code + "/players").push().set(p);
+}
+
 function nextGame(){
+	var winplayer;
+	for(var i in players)
+		if(players[i].score >= modeVal && (!winplayer || players[winplayer].score < players[i].score))
+			winplayer = i;
+	
+	if(winplayer){
+		// console.log(winplayer, players[winplayer]);
+		document.getElementById("winscreen").style.top = 0;
+		document.getElementById("wwname").innerHTML = players[winplayer].data.name;
+		document.getElementById("winscreen").style.background = "hsl(" + players[winplayer].data.color + ", 100%, 50%)";
+		document.getElementById("wwname").style.color = "hsl(" + players[winplayer].data.color + ", 100%, 50%)";
+		return;
+	}
+	
 	var sc = document.getElementById("scores");
 	sc.style.top = 0;
 	// sc = sc.firstChild;
@@ -548,7 +573,7 @@ function startGame(){
 	
 	var ctx = c.getContext("2d");
 	
-	for(var i = 0; i < 10; i++){
+	for(var i = 0; i < 20; i++){
 		var a = new asteroid(
 			Math.pow(Math.random(), 2) * 100 + 10,
 			(Math.random() * 2 - 0.5) * width,
@@ -558,11 +583,10 @@ function startGame(){
 			(Math.random() - 0.5) * 3,
 			(Math.random() - 0.5) * 0.04
 		);
-		if(a.colliding(asteroids) || Math.hypot(a.x - width / 2, a.y - height / 2) < width / 2){
+		if(a.colliding(asteroids) || Math.hypot(a.x - width / 2, a.y - height / 2) < width / 2 + a.r)
 			i--;
-			continue;
-		}
-		asteroids.push(a);
+		else
+			asteroids.push(a);
 	}
 	
 	var collider = new asteroid(20, 0, 0, 0, 0, 0, 0);
@@ -629,6 +653,8 @@ function startGame(){
 	
 	setTimeout(function(){
 		paused = false;
+		for(var i in players)
+			players[i].cooldown = Date.now() + startCooldown;
 	}, 1800);
 	
 	function update(){
@@ -796,6 +822,11 @@ function startGame(){
 			}
 			b = bullets[i];
 			if(typeof b.x == "undefined"){
+				if(Date.now() - players[b.s].cooldown < 0){
+					bullets.splice(i--, 1);
+					continue;
+				}
+				players[b.s].cooldown = Date.now() + cooldown;
 				b.x = players[b.s].pos.x;
 				b.y = players[b.s].pos.y;
 				b.r = players[b.s].pos.r;
@@ -1246,4 +1277,60 @@ function startPlayer(){
 	});
 }
 
-// startPlayer();
+var smi = document.getElementsByClassName("smallinp");
+for(var i = 0; i < smi.length; i++)
+	smi[i].onclick = noB;
+
+function noB(e){
+	if(document.getElementById("dropdown").className != "open")
+		e.stopPropagation();
+}
+
+var selectedMode = typeof localStorage.selectedMode == "undefined" ? 0 : parseInt(localStorage.selectedMode);
+document.getElementById("doffset").style.marginTop = -4.8 * selectedMode + "vmin";
+var modeVal = typeof localStorage.modeVal == "undefined" ? 0 : parseInt(localStorage.modeVal);
+document.getElementsByClassName("srow")[selectedMode].children[0].value = modeVal;
+document.getElementById("dropdown").onclick = function(e){
+	if(this.className == ""){
+		this.className = "open";
+		document.getElementById("doffset").style.marginTop = 0;
+		var c = this.children[0].children;
+		for(var i = 0; i < c.length; i++){
+			if(i != selectedMode)
+				c[i].children[0].value = c[i].children[0].placeholder;
+			c[i].children[0].disabled = true;
+		}
+	}else{
+		console.log(e.target);
+		this.className = "";
+		var t = (e.target.className == "smallinp" || e.target.className == "darker") ? e.target.parentNode : e.target;
+		var s = Array.prototype.indexOf.call(this.children[0].children, t);
+		if(s >= 0)
+			selectedMode = s;
+		document.getElementById("doffset").style.marginTop = -4.8 * selectedMode + "vmin";
+		modeVal = parseInt(this.children[0].children[selectedMode].children[0].value);
+		
+		localStorage.modeVal = modeVal;
+		localStorage.selectedMode = selectedMode;
+		
+		var c = this.children[0].children;
+		for(var i = 0; i < c.length; i++)
+			c[i].children[0].disabled = false;
+	}
+}
+
+function changeModeVal(e){
+	if(e.value == ""){
+		modeVal = 10;
+		localStorage.modeVal = modeVal;
+		return;
+	}
+	if(/\D/.test(e.value) || e.value.length > 2)
+		e.value = e.value.slice(0, -1);
+	if(e.value < parseInt(e.min)){
+		e.value = "";
+		modeVal = 10;
+	}else
+		modeVal = parseInt(e.value);
+	localStorage.modeVal = modeVal;
+}
