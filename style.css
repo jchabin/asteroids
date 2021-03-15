@@ -202,6 +202,18 @@ html, body {
 	color: #888;
 	font-size: 7vmin;
 }
+#bhelp{
+	overflow: visible;
+	display: inline-block;
+	text-align: center;
+	color: white;
+	font-size: 3vmin;
+	line-height: 75%;
+	width: 41.5vmin;
+	position: fixed;
+	bottom: 8.75vmin;
+	right: 8vmin;
+}
 #start{
 	display: inline-block;
 	text-align: center;
@@ -476,4 +488,16 @@ input[type=number] {
 	background: black;
 	color: white;
 /* 	transform: scale(1.2); */
+}
+.label{
+	color: white;
+	font-family: DotGothic16;
+	font-size: 2.5vmin;
+	text-shadow: 0 0 .5vmin black;
+	display: inline-block;
+	transform: translate(-50%, -150%);
+	border-bottom: .2vmin solid white;
+	line-height: 100%;
+	position: fixed;
+	overflow: visible;
 }
