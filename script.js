@@ -303,20 +303,31 @@ function flipPage(n){
 
 var mobile = /Mobi|Android/i.test(navigator.userAgent);
 if(mobile){
-	//mobile version
 	document.getElementById("desktop").style.display = "none";
+	var l = location.href.split("?code=");
+	if(l.length == 2){
+		document.getElementById("codeinp").value = l[1];
+		joinCode(document.getElementById("codeinp"));
+	}
 }else{
 	//desktop version
 	document.getElementById("mobile").style.display = "none";
 	const cLetters = "ABCDEFGHJKMNOPQRSTUVWXYZ";
+	var specificGameFailed = false;
 	function tryCode(){
-		code = "";
-		for(var i = 0; i < 4; i++)
-			code += cLetters[Math.floor(Math.random() * cLetters.length)];
+		var ccc = location.href.split("?code=");
+		if(ccc.length > 1 && !specificGameFailed){
+			code = ccc[1];
+			specificGameFailed = true;
+		}else{
+			code = "";
+			for(var i = 0; i < 4; i++)
+				code += cLetters[Math.floor(Math.random() * cLetters.length)];
+		}
 		ref = database.ref(code);
 		console.log(code);
 		ref.once("value", function(e){
-			if(e.val() == null){
+			if(e.val() == null || typeof e.val() == "undefined" || e.val().status == 3){
 				status = 1;
 				document.getElementById("code").innerHTML = code;
 				ref.set({
@@ -402,9 +413,17 @@ function joinCode(e){
 						wheelR = false;
 						cWheel.ontouchmove = cWheel.ontouchstart = undefined;
 						startPlayer();
+						
+						st = database.ref(code);
+						st.on("value", function(e){
+							if(e.val().status == 3)
+								reload();
+						});
 					}
 				});
-			}else{
+			}else if(n.val() && n.val().status == 3)
+				joinCode(e);
+			else{
 				console.log("nope", code);
 				e.style.borderColor = "#f33";
 			}
@@ -525,7 +544,6 @@ function nextGame(){
 			winplayer = i;
 	
 	if(winplayer){
-		// console.log(winplayer, players[winplayer]);
 		document.getElementById("winscreen").style.top = 0;
 		document.getElementById("wwname").innerHTML = players[winplayer].data.name;
 		document.getElementById("winscreen").style.background = "hsl(" + players[winplayer].data.color + ", 100%, 50%)";
@@ -607,9 +625,10 @@ function startGame(){
 	var c = 0;
 	for(var i in players){
 		var p = players[i];
-		var r = c++ / numPlayers * 2 * Math.PI
-		p.pos.x = width / 16 * Math.cos(r) + width / 2;
-		p.pos.y = width / 16 * Math.sin(r) + height / 2;
+		var r = c++ / numPlayers * 2 * Math.PI;
+		var dist = width / 32 + width / 16 * Math.random();
+		p.pos.x = dist * Math.cos(r) + width / 2;
+		p.pos.y = dist * Math.sin(r) + height / 2;
 		p.pos.r = r;
 		p.pos.xv = 0;
 		p.pos.yv = 0;
@@ -618,6 +637,15 @@ function startGame(){
 			p.lives = modeVal;
 		if(!p.score)
 			p.score = 0;
+		var label = document.createElement("DIV");
+		label.innerHTML = p.data.name;
+		label.style.left = p.pos.x + "px";
+		label.style.top  = p.pos.y + "px";
+		label.className = "label";
+		document.body.appendChild(label);
+		setTimeout(function(l){
+			document.body.removeChild(l);
+		}, 1300 + 500 * Math.random(), label);
 	}
 	
 	var alivePlayers = numPlayers;
@@ -824,7 +852,7 @@ function startGame(){
 				freezeFrame = 1;
 				
 				
-				if(selectedMode == 2 && p.lives-- > 0){
+				if(selectedMode == 2 && --p.lives > 0){
 					p.invc = Date.now() + tempI;
 					continue;
 				}
@@ -861,7 +889,7 @@ function startGame(){
 					
 					freezeFrame = 1;
 					
-					if(selectedMode == 2 && p.lives-- > 0){
+					if(selectedMode == 2 && --p.lives > 0){
 						p.invc = Date.now() + tempI;
 						continue;
 					}
@@ -1296,16 +1324,14 @@ function startPlayer(){
 				y = temp;
 			}
 			touchArr[t.identifier] = "";
-			if(Math.hypot(x - width / 4, y - height / 2) < height / 3)
+			if(Math.hypot(x - width * 3 / 4, y - height / 2) < height * 0.4)
+				if(!arrCont("J"))
+					touchArr[t.identifier] = "J";
+			if(touchArr[t.identifier] == "" && Math.hypot(x - width / 4, y - height / 2) < height * 0.5)
 				if(!arrCont("A")){
 					touchArr[t.identifier] = "A";
 					buttons.A = true;
 				}
-			
-			
-			if(Math.hypot(x - width * 3 / 4, y - height / 2) < height / 3)
-				if(!arrCont("J"))
-					touchArr[t.identifier] = "J";
 		}
 		tMove(e);
 	});
@@ -1399,4 +1425,14 @@ function changeModeVal(e){
 	}else
 		modeVal = parseInt(e.value);
 	localStorage.modeVal = modeVal;
+}
+
+function newGame(){
+	status = 3;
+	database.ref(code + "/status").set(status);
+	reload();
+}
+
+function reload(){
+	location.href = location.href.split("?")[0] + (code ? "?code=" + code : "");
 }
