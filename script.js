@@ -304,9 +304,9 @@ function flipPage(n){
 var mobile = /Mobi|Android/i.test(navigator.userAgent);
 if(mobile){
 	document.getElementById("desktop").style.display = "none";
-	var l = location.href.split("?code=");
-	if(l.length == 2){
-		document.getElementById("codeinp").value = l[1];
+	if(localStorage.getItem("code")){
+		document.getElementById("codeinp").value = localStorage.getItem("code");
+		localStorage.removeItem("code")
 		joinCode(document.getElementById("codeinp"));
 	}
 }else{
@@ -315,9 +315,9 @@ if(mobile){
 	const cLetters = "ABCDEFGHJKMNOPQRSTUVWXYZ";
 	var specificGameFailed = false;
 	function tryCode(){
-		var ccc = location.href.split("?code=");
-		if(ccc.length > 1 && !specificGameFailed){
-			code = ccc[1];
+		var ccc = localStorage.getItem("code");
+		if(ccc && !specificGameFailed){
+			code = ccc;
 			specificGameFailed = true;
 		}else{
 			code = "";
@@ -1434,5 +1434,6 @@ function newGame(){
 }
 
 function reload(){
-	location.href = location.href.split("?")[0] + (code ? "?code=" + code : "");
+	localStorage.setItem("code", code);
+	//location.href = location.href.split("?")[0] + (code ? "?code=" + code : "");
 }
