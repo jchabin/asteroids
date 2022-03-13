@@ -1435,5 +1435,6 @@ function newGame(){
 
 function reload(){
 	localStorage.setItem("code", code);
+	location.reload();
 	//location.href = location.href.split("?")[0] + (code ? "?code=" + code : "");
 }
