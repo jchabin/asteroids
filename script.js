@@ -1,3 +1,17 @@
+var mobile = /Mobi|Android/i.test(navigator.userAgent);
+
+var audio = ["laser", "death", "colld", "musicintro", "musicloop"];
+
+if(!mobile){
+	for(var i = 0; i < audio.length; i++){
+		audio[i] = new Audio(`https://jchabin.github.io/asteroids/${audio[i]}.wav`);
+		audio[i].preservesPitch = false;
+	}
+	audio[0].volume = 0.5;
+	audio[1].volume = 0.3;
+	audio[2].volume = 0.75;
+}
+
 var firebaseConfig = {
 	apiKey: "AIzaSyBMq-qt9oHkZnhwQfxfg9vlD0XCHzl2ZMU",
 	authDomain: "asteroids-3564a.firebaseapp.com",
@@ -301,7 +315,6 @@ function flipPage(n){
 	}
 }
 
-var mobile = /Mobi|Android/i.test(navigator.userAgent);
 if(mobile){
 	document.getElementById("desktop").style.display = "none";
 	if(localStorage.getItem("code")){
@@ -658,6 +671,13 @@ function startGame(){
 	var freezeFrame = 0;
 	
 	setTimeout(function(){
+		if(audio[3].paused && audio[4].paused){
+			setTimeout(function(){
+				audio[4].loop = true;
+				audio[4].play();
+			}, 9600);
+			audio[3].play();
+		}
 		var cou = document.createElement("DIV");
 		cou.className = "countdown";
 		cou.innerHTML = "3";
@@ -844,7 +864,10 @@ function startGame(){
 					));
 				}
 				
-				
+				var dd = audio[1].cloneNode();
+				dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
+				dd.volume = audio[1].volume;
+				dd.play();
 				
 				for(var n = 0; n < collider.hits.length; n++)
 					collider.hits[n].blame = i;
@@ -889,6 +912,11 @@ function startGame(){
 					
 					freezeFrame = 1;
 					
+					var dd = audio[1].cloneNode();
+					dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
+					dd.volume = audio[1].volume;
+					dd.play();
+					
 					if(selectedMode == 2 && --p.lives > 0){
 						p.invc = Date.now() + tempI;
 						continue;
@@ -921,6 +949,11 @@ function startGame(){
 				b.x = players[b.s].pos.x;
 				b.y = players[b.s].pos.y;
 				b.r = players[b.s].pos.r;
+				
+				var dd = audio[0].cloneNode();
+				dd.playbackRate = 1 - Math.random() * 0.2;
+				dd.volume = audio[0].volume;
+				dd.play();
 			}
 			ctx.strokeStyle = "hsl(" + players[b.s].data.color + ", 100%, 50%)";
 			ctx.beginPath();
@@ -950,6 +983,10 @@ function startGame(){
 					));
 				}
 				bullets.splice(i--, 1);
+				var dd = audio[2].cloneNode();
+				dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
+				dd.volume = audio[2].volume;
+				dd.play();
 			}else if(b.x < 0 || b.x > width || b.y < 0 || b.y > height)
 				bullets.splice(i--, 1);
 		}
