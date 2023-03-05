@@ -6,6 +6,7 @@ if(!mobile){
 	for(var i = 0; i < audio.length; i++){
 		audio[i] = new Audio(`https://jchabin.github.io/asteroids/${audio[i]}.wav`);
 		audio[i].preservesPitch = false;
+		audio[i].load();
 	}
 	audio[0].volume = 0.5;
 	audio[1].volume = 0.3;
@@ -673,11 +674,18 @@ function startGame(){
 	setTimeout(function(){
 		if(audio[3].paused && audio[4].paused){
 			setTimeout(function(){
-				audio[4].loop = true;
-				audio[4].play();
+				function playBGLoop(){
+					audio[4].currentTime = 0;
+					audio[4].play();
+					setTimeout(playBGLoop, (60 * 1000) / 200 * 16 * 24);
+				}
+				playBGLoop();
 			}, 9600);
 			audio[3].play();
 		}
+	}, 200);
+	
+	setTimeout(function(){
 		var cou = document.createElement("DIV");
 		cou.className = "countdown";
 		cou.innerHTML = "3";
