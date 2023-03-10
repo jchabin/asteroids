@@ -1,16 +1,17 @@
 var mobile = /Mobi|Android/i.test(navigator.userAgent);
 
-var audio = ["laser", "death", "colld", "musicintro", "musicloop"];
+var audioFiles = ["menuintro", "menuloop", "menuexit", "laser", "death", "colld", "musicintro", "musicloop"];
+var audio = {};
 
 if(!mobile){
-	for(var i = 0; i < audio.length; i++){
-		audio[i] = new Audio(`https://jchabin.github.io/asteroids/${audio[i]}.wav`);
-		audio[i].preservesPitch = false;
-		audio[i].load();
+	for(var i = 0; i < audioFiles.length; i++){
+		audio[audioFiles[i]] = new Audio(`https://jchabin.github.io/asteroids/${audioFiles[i]}.wav`);
+		audio[audioFiles[i]].preservesPitch = false;
+		audio[audioFiles[i]].load();
 	}
-	audio[0].volume = 0.5;
-	audio[1].volume = 0.3;
-	audio[2].volume = 0.75;
+	audio["laser"].volume = 0.5;
+	audio["death"].volume = 0.3;
+	audio["colld"].volume = 0.75;
 }
 
 var firebaseConfig = {
@@ -384,7 +385,7 @@ if(mobile){
 				tryCode();
 		});
 	}
-	tryCode();
+	// tryCode();
 }
 
 var cR;
@@ -588,6 +589,30 @@ function nextGame(){
 	lo.replaceChild(ba.cloneNode(), ba);
 }
 
+function createGame(){
+	tryCode();
+	document.getElementById("overlay").className = "";
+	document.getElementById("create").onclick = undefined;
+	function playMenuLoop(){
+		if(status != '1')
+			return;
+		audio["menuloop"].currentTime = 0;
+		audio["menuloop"].play();
+		setTimeout(playMenuLoop, 60 * 1000 / 150 * 16 * 4 - 100);
+	}
+	audio["menuintro"].play();
+	setTimeout(playMenuLoop, 60 * 1000 / 150 * 16 - 100);
+}
+
+function stopMusicThenStartGame(){
+	document.getElementById("start").onclick = undefined;
+	audio["menuintro"].pause();
+	audio["menuloop"].pause();
+	audio["menuexit"].play();
+	status = 2;
+	setTimeout(startGame, 500);
+}
+
 function startGame(){
 	document.getElementById("desktop").style.top = "-100vh";
 	setTimeout(function(){
@@ -672,18 +697,18 @@ function startGame(){
 	var freezeFrame = 0;
 	
 	setTimeout(function(){
-		if(audio[3].paused && audio[4].paused){
+		if(audio["musicintro"].paused && audio["musicloop"].paused){
 			setTimeout(function(){
 				function playBGLoop(){
-					audio[4].currentTime = 0;
-					audio[4].play();
-					setTimeout(playBGLoop, (60 * 1000) / 200 * 16 * 24);
+					audio["musicloop"].currentTime = 0;
+					audio["musicloop"].play();
+					setTimeout(playBGLoop, (60 * 1000) / 200 * 16 * 24 - 100);
 				}
 				playBGLoop();
-			}, 9600);
-			audio[3].play();
+			}, (60 * 1000) / 200 * 16 * 2 - 100);
+			audio["musicintro"].play();
 		}
-	}, 200);
+	}, 250);
 	
 	setTimeout(function(){
 		var cou = document.createElement("DIV");
@@ -872,9 +897,9 @@ function startGame(){
 					));
 				}
 				
-				var dd = audio[1].cloneNode();
+				var dd = audio["death"].cloneNode();
 				dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
-				dd.volume = audio[1].volume;
+				dd.volume = audio["death"].volume;
 				dd.play();
 				
 				for(var n = 0; n < collider.hits.length; n++)
@@ -920,9 +945,9 @@ function startGame(){
 					
 					freezeFrame = 1;
 					
-					var dd = audio[1].cloneNode();
+					var dd = audio["death"].cloneNode();
 					dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
-					dd.volume = audio[1].volume;
+					dd.volume = audio["death"].volume;
 					dd.play();
 					
 					if(selectedMode == 2 && --p.lives > 0){
@@ -958,9 +983,9 @@ function startGame(){
 				b.y = players[b.s].pos.y;
 				b.r = players[b.s].pos.r;
 				
-				var dd = audio[0].cloneNode();
+				var dd = audio["laser"].cloneNode();
 				dd.playbackRate = 1 - Math.random() * 0.2;
-				dd.volume = audio[0].volume;
+				dd.volume = audio["laser"].volume;
 				dd.play();
 			}
 			ctx.strokeStyle = "hsl(" + players[b.s].data.color + ", 100%, 50%)";
@@ -991,9 +1016,9 @@ function startGame(){
 					));
 				}
 				bullets.splice(i--, 1);
-				var dd = audio[2].cloneNode();
+				var dd = audio["colld"].cloneNode();
 				dd.playbackRate = 1 + (Math.random() - 0.5) * 0.2;
-				dd.volume = audio[2].volume;
+				dd.volume = audio["colld"].volume;
 				dd.play();
 			}else if(b.x < 0 || b.x > width || b.y < 0 || b.y > height)
 				bullets.splice(i--, 1);
