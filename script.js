@@ -619,8 +619,10 @@ function createGame(){
 
 function stopMusicThenStartGame(){
 	document.getElementById("start").onclick = undefined;
-	audio["menuintro"].pause();
-	audio["menuloop"].pause();
+	setTimeout(function(){
+		audio["menuintro"].pause();
+		audio["menuloop"].pause();
+	}, 50);
 	audio["menuexit"].play();
 	status = 2;
 	setTimeout(startGame, 500);
