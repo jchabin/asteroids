@@ -602,6 +602,17 @@ function createGame(){
 	}
 	audio["menuintro"].play();
 	setTimeout(playMenuLoop, 60 * 1000 / 150 * 16 - 100);
+	
+	for(var i = 1; i < audioFiles.length; i++){
+		let la = audio[audioFiles[i]];
+		if(la.readyState < 3){
+			la.oncanplay = function(e){
+				la.pause();
+				console.log(la);
+			}
+			la.play();
+		}
+	}
 }
 
 function stopMusicThenStartGame(){
