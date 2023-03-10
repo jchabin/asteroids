@@ -622,7 +622,7 @@ function stopMusicThenStartGame(){
 	setTimeout(function(){
 		audio["menuintro"].pause();
 		audio["menuloop"].pause();
-	}, 50);
+	}, 15);
 	audio["menuexit"].play();
 	status = 2;
 	setTimeout(startGame, 500);
