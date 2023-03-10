@@ -33,13 +33,16 @@
 			</div>
 		</div>
 		<div class="menu" id="desktop">
+			<div id="overlay" class="active">
+				<div id="create" onclick="createGame()">Create a Game</div>
+			</div>
 			<div class="header">Go to <span class="accent">jchabin.github.io/asteroids</span> on your phone to join the game.</div>
 			<div id="code">&nbsp;</div>
 			<div id="players">
 				
 			</div>
 			<div id="bhelp">You need 2 or more<br/>players to start.</div>
-			<div id="start" onclick="startGame()">Start Game!</div>
+			<div id="start" onclick="stopMusicThenStartGame()">Start Game!</div>
 			<div id="dlabel">Game win condition:</div>
 			<div id="dropdown">
 				<div id="doffset">
