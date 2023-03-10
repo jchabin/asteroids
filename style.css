@@ -501,3 +501,34 @@ input[type=number] {
 	position: fixed;
 	overflow: visible;
 }
+#overlay{
+	position: fixed;
+	top: -100vh;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9) 3vmin, rgba(10, 10, 10, 0.9) 3vmin, rgba(10, 10, 10, 0.9) 6vmin);
+	z-index: 1;
+	transition: top .3s;
+}
+#overlay.active{
+	top: 0;
+}
+#create{
+	display: inline-block;
+	text-align: center;
+	background: #080808;
+	border: 0.75vmin solid #fc3f3f;
+	color: #fc3f3f;
+	font-size: 10vmin;
+	width: 80vmin;
+	cursor: pointer;
+	position: absolute;
+	top: 50vh;
+	left: 50vw;
+	transform: translate(-50%, -50%);
+}
+#create:hover{
+	background: #fc3f3f;
+	color: #080808;
+}
