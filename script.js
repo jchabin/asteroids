@@ -609,6 +609,8 @@ function createGame(){
 			la.oncanplay = function(e){
 				la.pause();
 				console.log(la);
+				la.oncanplay = undefined;
+				la.currentTime = 0;
 			}
 			la.play();
 		}
