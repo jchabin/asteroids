@@ -644,10 +644,13 @@ function startGame(){
 	
 	var c = document.getElementById("c");
 	
+	var dpi = window.devicePixelRatio;
 	var height = window.innerHeight;
 	var width = window.innerWidth;
-	c.height = height;
-	c.width = width;
+	c.height = height * dpi;
+	c.width = width * dpi;
+	c.style.height = height + "px";
+	c.style.width = width + "px";
 	
 	var ctx = c.getContext("2d");
 	
@@ -765,6 +768,9 @@ function startGame(){
 	
 	var frameNum = 0;
 	function update(){
+		ctx.resetTransform();
+		ctx.scale(dpi, dpi);
+		
 		if(freezeFrame > 0){
 			requestAnimationFrame(update);
 			freezeFrame -= 0.5;
@@ -815,7 +821,7 @@ function startGame(){
 		
 		// ctx.clearRect(0, 0, width, height)
 		ctx.fillStyle = "black";
-		ctx.globalAlpha = 0.5;
+		ctx.globalAlpha = 0.35;
 		ctx.fillRect(0, 0, width, height);
 		ctx.globalAlpha = 1;
 		
@@ -1118,12 +1124,11 @@ function startGame(){
 			return;
 		}
 		ctx.resetTransform();
+		ctx.scale(dpi, dpi);
 		ctx.fillStyle = "black";
-		ctx.globalAlpha = 0.5;
+		ctx.globalAlpha = 0.2;
 		ctx.fillRect(0, 0, width, height);
 		ctx.globalAlpha = 1;
-		
-		
 		
 		ctx.translate(-camera.x * camera.scale + width / 2, -camera.y * camera.scale + height / 2);
 		ctx.scale(camera.scale, camera.scale);
@@ -1466,7 +1471,7 @@ function noB(e){
 
 var selectedMode = typeof localStorage.selectedMode == "undefined" ? 0 : parseInt(localStorage.selectedMode);
 document.getElementById("doffset").style.marginTop = -4.8 * selectedMode + "vmin";
-var modeVal = typeof localStorage.modeVal == "undefined" ? 0 : parseInt(localStorage.modeVal);
+var modeVal = typeof localStorage.modeVal == "undefined" ? 10 : parseInt(localStorage.modeVal);
 document.getElementsByClassName("srow")[selectedMode].children[0].value = modeVal;
 document.getElementById("dropdown").onclick = function(e){
 	if(this.className == ""){
