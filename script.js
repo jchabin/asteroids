@@ -321,7 +321,7 @@ if(mobile){
 	document.getElementById("desktop").style.display = "none";
 	if(localStorage.getItem("code")){
 		document.getElementById("codeinp").value = localStorage.getItem("code");
-		localStorage.removeItem("code")
+		localStorage.removeItem("code");
 		joinCode(document.getElementById("codeinp"));
 	}
 }else{
@@ -334,6 +334,7 @@ if(mobile){
 		if(ccc && !specificGameFailed){
 			code = ccc;
 			specificGameFailed = true;
+			localStorage.removeItem("code");
 		}else{
 			code = "";
 			for(var i = 0; i < 4; i++)
