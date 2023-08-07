@@ -532,3 +532,10 @@ input[type=number] {
 	background: #fc3f3f;
 	color: #080808;
 }
+#qrcode{
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 12vmax;
+	width: 12vmax;
+}
