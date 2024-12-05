@@ -322,6 +322,14 @@ if(mobile){
 	if(localStorage.getItem("code")){
 		document.getElementById("codeinp").value = localStorage.getItem("code");
 		localStorage.removeItem("code");
+
+		if(localStorage.getItem("pid")){
+			me = {
+				ref: database.ref(code + "/players/" + localStorage.getItem("pid")
+			}
+			localStorage.removeItem("pid");
+		}
+		
 		joinCode(document.getElementById("codeinp"));
 	}
 }else{
@@ -409,6 +417,28 @@ function joinCode(e){
 				console.log("yeap", code);
 				e.oninput = undefined;
 				e.blur();
+				if(me && me.ref){
+					me.ref.once("value", function(e){
+						if(e.val() && e.val().status.mov){
+							localStorage.setItem("pid", me.ref.path.pieces_[2]);
+							localStorage.setItem("code", code);
+
+							document.getElementById("nameinp").blur();
+							wheelR = false;
+							cWheel.ontouchmove = cWheel.ontouchstart = undefined;
+							startPlayer();
+
+							var st = database.ref(code);
+							st.on("value", function(e){
+								if(e.val().status == 3)
+									reload();
+							});
+						}else{
+							me = undefined;
+						}
+					});
+					return;
+				}
 				me = {
 					ref: database.ref(code + "/players").push(),
 					data: {
@@ -419,6 +449,8 @@ function joinCode(e){
 					}
 				}
 				me.ref.set(me.data);
+				localStorage.setItem("pid", me.ref.path.pieces_[2]);
+				localStorage.setItem("code", code);
 				wheelD = 360 - me.data.color;
 				flipPage(2);
 				var st = database.ref(code);
@@ -442,6 +474,7 @@ function joinCode(e){
 			else{
 				console.log("nope", code);
 				e.style.borderColor = "#f33";
+				me = undefined;
 			}
 		});
 	}
@@ -1526,6 +1559,7 @@ function newGame(){
 
 function reload(){
 	localStorage.setItem("code", code);
+	localStorage.removeItem("pid");
 	location.href = location.href;
 	//location.href = location.href.split("?")[0] + (code ? "?code=" + code : "");
 }
