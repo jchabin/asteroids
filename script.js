@@ -325,7 +325,7 @@ if(mobile){
 
 		if(localStorage.getItem("pid")){
 			me = {
-				ref: database.ref(code + "/players/" + localStorage.getItem("pid")
+				ref: database.ref(code + "/players/" + localStorage.getItem("pid"))
 			}
 			localStorage.removeItem("pid");
 		}
