@@ -413,7 +413,7 @@ function joinCode(e){
 			if(eR != cR)
 				return;
 			console.log(n.val());
-			if(n.val() && n.val().status == 1){
+			if(n.val() && (n.val().status == 1 || (me && me.ref && n.val().status == 2))){
 				console.log("yeap", code);
 				e.oninput = undefined;
 				e.blur();
@@ -434,6 +434,8 @@ function joinCode(e){
 									reload();
 							});
 						}else{
+							console.log("nope", code);
+							e.style.borderColor = "#f33";
 							me = undefined;
 						}
 					});
