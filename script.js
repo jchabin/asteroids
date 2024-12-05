@@ -321,15 +321,14 @@ if(mobile){
 	document.getElementById("desktop").style.display = "none";
 	if(localStorage.getItem("code")){
 		document.getElementById("codeinp").value = localStorage.getItem("code");
-		localStorage.removeItem("code");
 
 		if(localStorage.getItem("pid")){
 			me = {
-				ref: database.ref(code + "/players/" + localStorage.getItem("pid"))
+				ref: database.ref(localStorage.getItem("code") + "/players/" + localStorage.getItem("pid"))
 			}
-			console.log(me.ref, code + "/players/" + localStorage.getItem("pid"));
 			localStorage.removeItem("pid");
 		}
+		localStorage.removeItem("code");
 		
 		joinCode(document.getElementById("codeinp"));
 	}
