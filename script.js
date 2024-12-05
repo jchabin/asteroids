@@ -390,8 +390,10 @@ if(mobile){
 					bullets.push(e.val());
 					e.ref_.remove();
 				});
-			}else
+			}else{
+				console.log(e.val());
 				tryCode();
+			}
 		});
 	}
 	// tryCode();
@@ -475,7 +477,7 @@ function joinCode(e){
 					}
 				});
 			}else if(n.val() && n.val().status == 3)
-				joinCode(e);
+				setTimeout(function(){ joinCode(e) }, 1000);
 			else{
 				console.log("nope", code);
 				e.style.borderColor = "#f33";
@@ -1559,7 +1561,7 @@ function changeModeVal(e){
 function newGame(){
 	status = 3;
 	database.ref(code + "/status").set(status);
-	reload();
+	setTimeout(reload, 500);
 }
 
 function reload(){
