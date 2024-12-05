@@ -423,9 +423,11 @@ function joinCode(e){
 					me.ref.once("value", function(m){
 						if(m.val() && m.val().mov){
 							me.data = m.val();
-							
-							localStorage.setItem("pid", me.ref.path.pieces_[2]);
-							localStorage.setItem("code", code);
+
+							setTimeout(function(){
+								localStorage.setItem("pid", me.ref.path.pieces_[2]);
+								localStorage.setItem("code", code);
+							}, 10000);
 
 							document.getElementById("nameinp").blur();
 							wheelR = false;
