@@ -418,8 +418,10 @@ function joinCode(e){
 				e.oninput = undefined;
 				e.blur();
 				if(me && me.ref){
-					me.ref.once("value", function(e){
-						if(e.val() && e.val().status.mov){
+					me.ref.once("value", function(m){
+						if(m.val() && m.val().mov){
+							me.data = m.val();
+							
 							localStorage.setItem("pid", me.ref.path.pieces_[2]);
 							localStorage.setItem("code", code);
 
@@ -434,6 +436,7 @@ function joinCode(e){
 									reload();
 							});
 						}else{
+							console.log(m.val());
 							console.log("nope", code);
 							e.style.borderColor = "#f33";
 							me = undefined;
