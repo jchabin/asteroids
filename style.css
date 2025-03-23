@@ -539,3 +539,31 @@ input[type=number] {
 	height: 12vmax;
 	width: 12vmax;
 }
+#autojoin-warn{
+	position: fixed;
+	/* bottom: 3vmin; */
+	bottom: -50vh;
+	left: 3vmin;
+	right: 3vmin;
+	border: 1vmin solid #fc3f3f;
+	font-size: 6vmin;
+	color: #fce03f;
+	padding: 2vmin;
+	box-sizing: border-box;
+	transition: bottom .5s;
+	background: black;
+}
+#swap{
+	position: fixed;
+	width: 20vmin;
+	top: 5vmin;
+	left: 50vw;
+	transform: translateX(-50%);
+}
+@media (orientation: portrait) {
+	#swap {
+		left: 5vmin;
+		top: 50vh;
+		transform: translateY(-50%) rotate(90deg);
+	}
+}
